@@ -19,6 +19,8 @@ using System.IO;
 using System.Net.NetworkInformation;
 using Microsoft.Win32;
 using System.Runtime.InteropServices;
+using Excel = Microsoft.Office.Interop.Excel;
+
 
 namespace HardWare_SoftWare_Monitor
 {
@@ -340,7 +342,34 @@ namespace HardWare_SoftWare_Monitor
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            Excel.Application xlApp = new Microsoft.Office.Interop.Excel.Application();
 
+            if (xlApp == null)
+            {
+                MessageBox.Show("Nincs Excell telepitve");
+                return;
+            }
+            Excel.Workbook xlWorkBook;
+            Excel.Worksheet xlWorkSheet;
+            object misValue = System.Reflection.Missing.Value;
+            xlWorkBook = xlApp.Workbooks.Add(misValue);
+            xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
+            xlWorkSheet.Cells[1, 1] = "Operációs Rendszer:";
+            xlWorkSheet.Cells[1, 2] = OSType;
+            xlWorkSheet.Cells[2, 1] = "Windows mappa:";
+            xlWorkSheet.Cells[2, 2] = OSWinDir;
+            xlWorkSheet.Cells[3, 1] = "Rendszer mappa:";
+            xlWorkSheet.Cells[3, 2] = OSSysDir;
+            xlWorkSheet.Cells[4, 1] = "Sorozatszám:";
+            xlWorkSheet.Cells[4, 2] = OSSerial;
+            xlWorkSheet.Cells[5, 1] = "Verzió:";
+            xlWorkSheet.Cells[5, 2] = OSVersion;
+            xlWorkBook.SaveAs("C/Program Files", Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
+            xlWorkBook.Close(true, misValue, misValue);
+            xlApp.Quit();
+            Marshal.ReleaseComObject(xlWorkSheet);
+            Marshal.ReleaseComObject(xlWorkBook);
+            Marshal.ReleaseComObject(xlApp);
         }
     }
 }
